@@ -17,9 +17,13 @@ def iterate_logistic(r, x0, n):
     返回:
         x: 迭代序列数组
     """
-    pass
+    x = np.zeros(n)  # 初始化数组
+    x[0] = x0  # 设置初始值
+    for i in range(1, n):
+        x[i] = r * x[i-1] * (1 - x[i-1])  # Logistic映射迭代公式
+    return x
 
-def plot_time_series(r, x0, n):
+def plot_time_series(r_values, x0, n):
     """
     绘制时间序列图
     
@@ -31,7 +35,21 @@ def plot_time_series(r, x0, n):
     返回:
         fig: matplotlib图像对象
     """
-    pass
+    fig, axs = plt.subplots(2, 2, figsize=(12, 8))  # 创建2x2的子图
+    fig.suptitle('Logistic Map Time Series for Different r Values')  # 设置总标题
+    
+    for i, r in enumerate(r_values):
+        x = iterate_logistic(r, x0, n)  # 获取迭代序列
+        row = i // 2  # 子图的行索引
+        col = i % 2   # 子图的列索引
+        axs[row, col].plot(range(n), x, 'b-')  # 绘制时间序列，去除图例
+        axs[row, col].set_xlabel('Iteration')
+        axs[row, col].set_ylabel('x')
+        axs[row, col].set_title(f'r = {r}')
+        axs[row, col].grid(True)
+    
+    plt.tight_layout()  # 调整子图布局
+    return fig 
 
 def plot_bifurcation(r_min, r_max, n_r, n_iterations, n_discard):
     """
@@ -47,7 +65,23 @@ def plot_bifurcation(r_min, r_max, n_r, n_iterations, n_discard):
     返回:
         fig: matplotlib图像对象
     """
-    pass
+    r_values = np.linspace(r_min, r_max, n_r)  # 生成r的取值范围
+    x_values = []  # 存储x的值
+    for r in r_values:
+        x = 0.5  # 初始值
+        for i in range(n_iterations):
+            x = r * x * (1 - x)  # Logistic映射迭代
+            if i >= n_discard:  # 丢弃前n_discard次迭代
+                x_values.append((r, x))
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    r, x = zip(*x_values)  # 解压r和x的值
+    ax.plot(r, x, 'k.', markersize=0.1)  # 绘制分岔图
+    ax.set_xlabel('r')
+    ax.set_ylabel('x')
+    ax.set_title('Bifurcation Diagram of Logistic Map')
+    ax.grid(True)
+    return fig
 
 def main():
     """主函数"""
@@ -56,10 +90,10 @@ def main():
     x0 = 0.5
     n = 100
     
-    for r in r_values:
-        fig = plot_time_series(r, x0, n)
-        fig.savefig(f"logistic_r{r}.png", dpi=300)
-        plt.close(fig)
+    # 绘制四个子图在同一幅图中
+    fig = plot_time_series(r_values, x0, n)
+    fig.savefig("logistic_time_series.png", dpi=300)
+    plt.close(fig)
     
     # 分岔图分析
     fig = plot_bifurcation(2.5, 4.0, 1000, 1000, 100)
