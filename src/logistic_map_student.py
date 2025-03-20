@@ -35,21 +35,14 @@ def plot_time_series(r_values, x0, n):
     返回:
         fig: matplotlib图像对象
     """
-    fig, axs = plt.subplots(2, 2, figsize=(12, 8))  # 创建2x2的子图
-    fig.suptitle('Logistic Map Time Series for Different r Values')  # 设置总标题
-    
-    for i, r in enumerate(r_values):
-        x = iterate_logistic(r, x0, n)  # 获取迭代序列
-        row = i // 2  # 子图的行索引
-        col = i % 2   # 子图的列索引
-        axs[row, col].plot(range(n), x, 'b-')  # 绘制时间序列，去除图例
-        axs[row, col].set_xlabel('Iteration')
-        axs[row, col].set_ylabel('x')
-        axs[row, col].set_title(f'r = {r}')
-        axs[row, col].grid(True)
-    
-    plt.tight_layout()  # 调整子图布局
-    return fig 
+    x = iterate_logistic(r, x0, n)  # 获取迭代序列
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(range(n), x, 'b-')  # 绘制时间序列，去除图例
+    ax.set_xlabel('Iteration')
+    ax.set_ylabel('x')
+    ax.set_title(f'Logistic Map Time Series (r = {r})')
+    ax.grid(True)
+    return fig
 
 def plot_bifurcation(r_min, r_max, n_r, n_iterations, n_discard):
     """
@@ -65,18 +58,18 @@ def plot_bifurcation(r_min, r_max, n_r, n_iterations, n_discard):
     返回:
         fig: matplotlib图像对象
     """
-    r_values = np.linspace(r_min, r_max, n_r)  # 生成r的取值范围
+    r = np.linspace(r_min, r_max, n_r)  # 生成r的取值范围
     x_values = []  # 存储x的值
-    for r in r_values:
+    for ri in r:
         x = 0.5  # 初始值
         for i in range(n_iterations):
-            x = r * x * (1 - x)  # Logistic映射迭代
+            x = ri * x * (1 - x)  # Logistic映射迭代
             if i >= n_discard:  # 丢弃前n_discard次迭代
-                x_values.append((r, x))
+                x_values.append((ri, x))
     
     fig, ax = plt.subplots(figsize=(10, 6))
-    r, x = zip(*x_values)  # 解压r和x的值
-    ax.plot(r, x, 'k.', markersize=0.1)  # 绘制分岔图
+    r_plot, x_plot = zip(*x_values)  # 解压r和x的值
+    ax.plot(r_plot, x_plot, 'k.', markersize=0.1)  # 绘制分岔图
     ax.set_xlabel('r')
     ax.set_ylabel('x')
     ax.set_title('Bifurcation Diagram of Logistic Map')
@@ -90,8 +83,21 @@ def main():
     x0 = 0.5
     n = 100
     
-    # 绘制四个子图在同一幅图中
-    fig = plot_time_series(r_values, x0, n)
+    # 创建一幅包含四个子图的图像
+    fig, axs = plt.subplots(2, 2, figsize=(12, 8))
+    fig.suptitle('Logistic Map Time Series for Different r Values')  # 设置总标题
+    
+    for i, r in enumerate(r_values):
+        x = iterate_logistic(r, x0, n)  # 获取迭代序列
+        row = i // 2  # 子图的行索引
+        col = i % 2   # 子图的列索引
+        axs[row, col].plot(range(n), x, 'b-')  # 绘制时间序列，去除图例
+        axs[row, col].set_xlabel('Iteration')
+        axs[row, col].set_ylabel('x')
+        axs[row, col].set_title(f'r = {r}')
+        axs[row, col].grid(True)
+    
+    plt.tight_layout()  # 调整子图布局
     fig.savefig("logistic_time_series.png", dpi=300)
     plt.close(fig)
     
