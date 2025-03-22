@@ -106,7 +106,7 @@ def calculate_planck_constant(m):
     
     # 在此处编写代码，计算普朗克常量和相对误差
     # 提示: 实际的普朗克常量值为 6.626e-34 J·s
-     if m <= 0:
+    if m <= 0:
         raise ValueError("斜率必须为正数")
     
     e = 1.602e-19  # 电子电荷
