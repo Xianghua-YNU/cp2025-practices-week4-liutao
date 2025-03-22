@@ -5,6 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def load_data(filename):
     """
     加载数据文件
@@ -23,7 +24,6 @@ def load_data(filename):
     except Exception as e:
         raise FileNotFoundError(f"无法加载文件: {filename}") from e
 
-    pass
 
 def calculate_parameters(x, y):
     """
@@ -61,7 +61,7 @@ def calculate_parameters(x, y):
     c = (Exx*Ey - Ex*Exy) / denominator
 
     return m, c, Ex, Ey, Exx, Exy
-    pass
+    
 
 def plot_data_and_fit(x, y, m, c):
     """
@@ -76,8 +76,19 @@ def plot_data_and_fit(x, y, m, c):
     返回:
         fig: matplotlib图像对象
     """
-    # 在此处编写代码，绘制数据点和拟合直线
-    pass
+    # 在此处编写代码，绘制数据点和拟合直
+    if np.isnan(m) or np.isnan(c):
+        raise ValueError("斜率和截距不能为NaN")
+    
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, label='实验数据')
+    y_fit = m*x + c
+    ax.plot(x, y_fit, 'r', label='拟合直线')
+    ax.set_xlabel('频率 (Hz)')
+    ax.set_ylabel('电压 (V)')
+    ax.legend()
+    return fig
+
 
 def calculate_planck_constant(m):
     """
@@ -95,18 +106,15 @@ def calculate_planck_constant(m):
     
     # 在此处编写代码，计算普朗克常量和相对误差
     # 提示: 实际的普朗克常量值为 6.626e-34 J·s
-    if np.isnan(m) or np.isnan(c):
-        raise ValueError("斜率和截距不能为NaN")
+     if m <= 0:
+        raise ValueError("斜率必须为正数")
+    
+    e = 1.602e-19  # 电子电荷
+    h = m * e
+    actual_h = 6.626e-34
+    relative_error = abs(h - actual_h) / actual_h * 100
+    return h, relative_error
 
-    fig, ax = plt.subplots()
-    ax.scatter(x, y, label='实验数据')
-    y_fit = m*x + c
-    ax.plot(x, y_fit, 'r', label='拟合直线')
-    ax.set_xlabel('频率 (Hz)')
-    ax.set_ylabel('电压 (V)')
-    ax.legend()
-    return fig
-    pass
 
 def main():
     """主函数"""
